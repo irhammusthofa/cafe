@@ -1,6 +1,7 @@
 package id.co.kamil.cafe;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -37,8 +38,7 @@ public class MenuAdapter extends ArrayAdapter<DataMenu> {
         txtJenis.setText(dataMenu.getJenis());
         txtNama.setText(dataMenu.getNama());
         txtPenjelasan.setText(dataMenu.getPenjelasan());
-        txtHarga.setText(dataMenu.getHarga());
-
+        txtHarga.setText("Rp. " + String.format("%,.0f",Float.parseFloat(dataMenu.getHarga())));
         return rooView;
     }
 }

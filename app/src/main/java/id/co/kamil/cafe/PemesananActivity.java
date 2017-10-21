@@ -24,6 +24,18 @@ public class PemesananActivity extends AppCompatActivity {
     private Button btnTambah;
     private Button btnMenu;
     private DatabaseHelper dbHelper;
+    private String[] nama = {"Kopi Hitam","Cappuccino","Sparkling Tea","Batagor","Cireng","Nasi Goreng","Cheese Cake","Black Salad"};
+    private String[] jenis = {"Minuman","Minuman","Minuman","Makanan","Makanan","Makanan","Dessert","Dessert"};
+    private String[] harga = {"10000","20000","15000","25000","10000","50000","40000","30000"};
+    private String[] penjelasan = {"Kopi Hitam dengan dibuat dengan teknik espresso, dimana biji kopi yang diguanakn yaitu berasal dari Aceh Gayo jenis Arabika, disajikan dengan gula terpisah",
+            "Paduan Kopi dengan buih susu kental serta menggunakan sirup karamel, dimana biji kopi yang digunakan berasal dari Gunung Puntang Jawa Barat jenis Robusta",
+            "Minuman teh yang menggunakan daun teh dari pegunungan daerah garut dengan tambahan sari melati asli dan gula merah alami",
+            "Baso dan Tahu goreng dengan sajian bumbu kacang dan kecap khas bandung",
+            "Makann ringan berupa tepung kenji goreng isi bahan dasar tempe fermentasi yang disebut oncom, disajikan dengan bumbu kacang pedas",
+            "Nasi goreng ayam yang disajikan dengan telur mata sapi disertai satai ayam",
+            "Kue Tart 1 dlice dengan bahan utama cream cgeese dengan topping buah-buahan asli seperti anggur, jeruk, kiwi",
+            "Potongan buah-buah segar yang terdiri dari Pepaya, Jambu, melon, dan mangga disajikan dengan bumbu rujak kacang pedas dan gula merah."};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,29 +57,58 @@ public class PemesananActivity extends AppCompatActivity {
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),MenuActivity.class));
+                Intent intent = new Intent(getApplicationContext(),MenuActivity.class);
+                intent.putExtra("pesan",true);
+                startActivityForResult(intent,1);
             }
         });
         btnTambah.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SQLiteDatabase db = dbHelper.getWritableDatabase();
+                final String tmpmeja = txtMeja.getText().toString();
+                final String tmpmenu = txtMenu.getText().toString();
+                final String tmpharga = txtHarga.getText().toString();
 
-                final ContentValues values = new ContentValues();
-                values.put(DatabaseContract.Pesanan.COL_TGL,txtTgl.getText().toString());
-                values.put(DatabaseContract.Pesanan.COL_JAM,txtJam.getText().toString());
-                values.put(DatabaseContract.Pesanan.COL_MEJA,txtMeja.getText().toString());
-                values.put(DatabaseContract.Pesanan.COL_MENU,txtMenu.getText().toString());
-                values.put(DatabaseContract.Pesanan.COL_HARGA,txtHarga.getText().toString());
-                Log.i(TAG,"Insert data : " + values);
-                db.insert(DatabaseContract.Pesanan.TABLE_NAME,null,values);
+                if (tmpmeja.isEmpty()){
+                    Toast.makeText(getApplicationContext(),"Maaf, Nomor Meja masih kosong",Toast.LENGTH_SHORT).show();
+                }else if (tmpmenu.isEmpty()){
+                    Toast.makeText(getApplicationContext(),"Maaf, Nama Menu masih kosong",Toast.LENGTH_SHORT).show();;
+                }else{
+                    if(tmpharga.isEmpty()){
+                        txtHarga.setText("0");
+                    }
 
-                Toast.makeText(getApplicationContext(),"Data berhasil disimpan",Toast.LENGTH_SHORT);
-                finish();
+                    final SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    final ContentValues values = new ContentValues();
+                    values.put(DatabaseContract.Pesanan.COL_TGL,txtTgl.getText().toString());
+                    values.put(DatabaseContract.Pesanan.COL_JAM,txtJam.getText().toString());
+                    values.put(DatabaseContract.Pesanan.COL_MEJA,txtMeja.getText().toString());
+                    values.put(DatabaseContract.Pesanan.COL_MENU,txtMenu.getText().toString());
+                    values.put(DatabaseContract.Pesanan.COL_HARGA,txtHarga.getText().toString());
+                    Log.i(TAG,"Insert data : " + values);
+                    db.insert(DatabaseContract.Pesanan.TABLE_NAME,null,values);
+
+                    Toast.makeText(getApplicationContext(),"Data berhasil disimpan",Toast.LENGTH_SHORT).show();;
+                    finish();
+                }
             }
         });
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                int index = data.getIntExtra("index",0);
+                Log.i(TAG,"Result Index : " + index);
+                txtMenu.setText(nama[index]);
+                txtHarga.setText(harga[index]);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
