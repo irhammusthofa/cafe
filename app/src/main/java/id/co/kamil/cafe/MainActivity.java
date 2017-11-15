@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.Serializable;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private List<Pesanan> listPesanan = new ArrayList<>();
     private ListView lstPesanan;
     private DatabaseHelper dbHelper;
+    private TextView txtInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         setContentView(R.layout.activity_main);
         lstPesanan = (ListView) findViewById(R.id.listPesanan);
         dbHelper = new DatabaseHelper(this);
+        txtInfo = (TextView) findViewById(R.id.txtinfo);
+
         final SQLiteDatabase db = dbHelper.getWritableDatabase();
 //        db.execSQL("DELETE FROM " + DatabaseContract.Pesanan.TABLE_NAME);
         lstPesanan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -99,13 +103,25 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                         Log.i(TAG,"Get data : "+pesanan.toString());
                         listPesanan.add(pesanan);
                     }while (cursor.moveToNext());
+                    display(true);
                 }else{
-                    Toast.makeText(this, "Tidak ada data yang dapat ditampilkan", Toast.LENGTH_SHORT).show();
+                    display(false);
+                    //Toast.makeText(this, "Tidak ada data yang dapat ditampilkan", Toast.LENGTH_SHORT).show();
                 }
             }finally {
                 Log.i(TAG,"Cursor state : Close");
                 cursor.close();
             }
+        }
+    }
+    private void display(boolean bool){
+        if (bool){
+            txtInfo.setVisibility(View.GONE);
+            lstPesanan.setVisibility(View.VISIBLE);
+        }else{
+            txtInfo.setVisibility(View.VISIBLE);
+            txtInfo.setText("Tidak ada data meja yang memesan, silahkan lakukan transaksi.");
+            lstPesanan.setVisibility(View.GONE);
         }
     }
     private void displayPesanan(){
